@@ -57,6 +57,7 @@ func (r *Receipt) UnmarshalJSON(input []byte) error {
 		TxHash            *common.Hash    `json:"transactionHash" gencodec:"required"`
 		ContractAddress   *common.Address `json:"contractAddress"`
 		GasUsed           *hexutil.Uint64 `json:"gasUsed" gencodec:"required"`
+		EffectiveGasPrice *hexutil.Big    `json:"effectiveGasPrice"`
 		BlockHash         *common.Hash    `json:"blockHash,omitempty"`
 		BlockNumber       *hexutil.Big    `json:"blockNumber,omitempty"`
 		TransactionIndex  *hexutil.Uint   `json:"transactionIndex"`
@@ -97,6 +98,10 @@ func (r *Receipt) UnmarshalJSON(input []byte) error {
 		return errors.New("missing required field 'gasUsed' for Receipt")
 	}
 	r.GasUsed = uint64(*dec.GasUsed)
+	if dec.EffectiveGasPrice == nil {
+		return errors.New("missing required field 'effectiveGasPrice' for Receipt")
+	}
+	r.EffectiveGasPrice = (*big.Int)(dec.EffectiveGasPrice)
 	if dec.BlockHash != nil {
 		r.BlockHash = *dec.BlockHash
 	}
