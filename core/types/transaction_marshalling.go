@@ -104,7 +104,7 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 	if err := json.Unmarshal(input, &dec); err != nil {
 		return err
 	}
-
+	t.hash.Store(dec.Hash)
 	// Decode / verify fields according to transaction type.
 	var inner TxData
 	switch dec.Type {
@@ -232,6 +232,10 @@ func (t *Transaction) UnmarshalJSON(input []byte) error {
 			return errors.New("missing required field 'maxFeePerGas' for txdata")
 		}
 		itx.GasFeeCap = (*big.Int)(dec.MaxFeePerGas)
+		itx.GasPrice = itx.GasFeeCap
+		if dec.GasPrice != nil {
+			itx.GasPrice = (*big.Int)(dec.GasPrice)
+		}
 		if dec.Gas == nil {
 			return errors.New("missing required field 'gas' for txdata")
 		}
